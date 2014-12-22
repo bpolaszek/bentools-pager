@@ -1,0 +1,27 @@
+{
+    "name": "bentools/pager",
+    "type": "library",
+    "description": "A simple pager class with delta management",
+    "keywords": ["pager", "page", "pagination", "delta"],
+    "homepage": "https://github.com/bpolaszek/bentools-pager",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Beno!t POLASZEK",
+            "role": "Developer"
+        }
+    ],
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/bpolaszek/bentools-pager"
+        }
+    ],
+    "require": {
+        "php": ">=5.3",
+        "bentools/url": "0.2"
+    },
+    "autoload": {
+        "psr-4": {"BenTools\\": "src/BenTools"}
+    }
+}
