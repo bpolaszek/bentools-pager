@@ -450,7 +450,7 @@ class Pager implements \IteratorAggregate, \Countable, \ArrayAccess {
      * @return \ArrayIterator
      */
     public function getIterator() {
-        return new \ArrayIterator($this->getPages());
+        return new \ArrayObject($this->getPages());
     }
 
     /**
@@ -477,7 +477,7 @@ class Pager implements \IteratorAggregate, \Countable, \ArrayAccess {
      * @return bool
      */
     public function offsetExists($offset) {
-        return is_callable([$this, 'get' . $offset]) || is_callable([$this, 'is' . $offset]);
+        return (is_numeric($offset) && array_key_exists($offset, $this->getPages())) || is_callable([$this, 'get' . $offset]) || is_callable([$this, 'is' . $offset]);
     }
 
     /**
@@ -486,7 +486,11 @@ class Pager implements \IteratorAggregate, \Countable, \ArrayAccess {
      * @return mixed|null
      */
     public function offsetGet($offset) {
-        if (is_callable([$this, 'get' . $offset]))
+
+        if (is_numeric($offset))
+            return array_key_exists($offset, $this->getPages()) ? $this->getPages()[$offset] : null;
+
+        elseif (is_callable([$this, 'get' . $offset]))
             return call_user_func([$this, 'get' . $offset]);
 
         elseif (is_callable([$this, 'is' . $offset]))
