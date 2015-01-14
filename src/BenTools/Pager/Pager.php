@@ -34,7 +34,7 @@ use BenTools\Url;
  *
  * @package BenTools\Pager
  */
-class Pager implements \IteratorAggregate, \Countable, \ArrayAccess {
+class Pager implements \IteratorAggregate, \Countable, \ArrayAccess, \JsonSerializable {
 
     const       DEFAULT_PAGE_CLASS      =   '\\BenTools\\Pager\\Page';
     const       DEFAULT_QUERY_PARAM     =   'page';
@@ -122,10 +122,10 @@ class Pager implements \IteratorAggregate, \Countable, \ArrayAccess {
             $this->setUrl(new Url($_SERVER['REQUEST_URI']));
 
         $this   ->  setResultsPerPage($resultsPerPage)
-                ->  setTotalResultCount($totalResultCount)
-                ->  setQueryParam($queryParam)
-                ->  setRewriteString($rewriteString)
-                ->  setDelta($delta);
+            ->  setTotalResultCount($totalResultCount)
+            ->  setQueryParam($queryParam)
+            ->  setRewriteString($rewriteString)
+            ->  setDelta($delta);
 
         $this   ->  getCurrentPageIteration();
     }
@@ -284,9 +284,9 @@ class Pager implements \IteratorAggregate, \Countable, \ArrayAccess {
 
             while ($p < $this->getNbPages())
                 $pagerArray[] = $this->getPageInstance(++$p);
-                foreach ($pagerArray AS $page)
-                    if ($page->isFirstPage() OR $page->isCurrentPage() OR $page->isLastPage())
-                        $this->pages[] = $page;
+            foreach ($pagerArray AS $page)
+                if ($page->isFirstPage() OR $page->isCurrentPage() OR $page->isLastPage())
+                    $this->pages[] = $page;
 
             # Calculate delta
             for ($i = 1; $i <= $this->getDelta(); $i++) {
@@ -519,4 +519,17 @@ class Pager implements \IteratorAggregate, \Countable, \ArrayAccess {
         return $this->offsetSet($offset, null);
     }
 
+    /**
+     * JsonSerializable implementation
+     * @return array
+     */
+    public function jsonSerialize() {
+        return [
+            'count'                 =>  $this->getNbPages(),
+            'perPage'               =>  $this->getResultsPerPage(),
+            'currentPageIteration'  =>  $this->getCurrentPageIteration(),
+            'currentOffset'         =>  $this->getCurrentOffset(),
+            'pages'                 =>  $this->getPages(),
+        ];
+    }
 }

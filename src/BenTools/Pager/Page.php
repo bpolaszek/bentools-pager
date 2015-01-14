@@ -34,7 +34,7 @@ use BenTools\Url;
  *
  * @package BenTools\Pager
  */
-class Page implements PageInterface, \ArrayAccess {
+class Page implements PageInterface, \ArrayAccess, \JsonSerializable {
 
     protected   $iteration;
     protected   $isFirstPage;
@@ -243,5 +243,21 @@ class Page implements PageInterface, \ArrayAccess {
      */
     public function offsetUnset($offset) {
         return $this->offsetSet($offset, null);
+    }
+
+    /**
+     * JsonSerializable implementation
+     * @return array
+     */
+    public function jsonSerialize() {
+        return [
+            'isCurrentPage'   =>  $this->isCurrentPage(),
+            'isFirstPage'     =>  $this->isFirstPage(),
+            'isLastPage'      =>  $this->isLastPage(),
+            'isPreviousPage'  =>  $this->isPreviousPage(),
+            'isNextPage'      =>  $this->isNextPage(),
+            'iteration'       =>  $this->getIteration(),
+            'url'             =>  (string) $this->getUrl(),
+        ];
     }
 }
