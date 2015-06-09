@@ -275,18 +275,15 @@ class Pager implements \IteratorAggregate, \Countable, \ArrayAccess, \JsonSerial
 
         $this->setNbPages((int) ceil($this->getTotalResultCount() / $this->getResultsPerPage()));
 
-
         # Case of a delta, e.g. << 1 ... 6 [7] 8 ... 15 >>
         if ($this->getDelta()) {
 
-            $pagerArray     =   [];
             $p              =   0;
 
-            while ($p < $this->getNbPages())
-                $pagerArray[] = $this->getPageInstance(++$p);
-            foreach ($pagerArray AS $page)
-                if ($page->isFirstPage() OR $page->isCurrentPage() OR $page->isLastPage())
-                    $this->pages[] = $page;
+            # Add first page, current page and last page
+            $this->pages[]  =   $this->getPageInstance(1);
+            $this->pages[]  =   $this->getPageInstance($this->getCurrentPageIteration());
+            $this->pages[]  =   $this->getPageInstance($this->getNbPages());
 
             # Calculate delta
             for ($i = 1; $i <= $this->getDelta(); $i++) {
