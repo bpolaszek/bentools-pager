@@ -19,7 +19,7 @@
     ],
     "require": {
         "php": ">=5.4",
-        "bentools/url": "0.2"
+        "bentools/url": "~0"
     },
     "autoload": {
         "psr-4": {"BenTools\\": "src/BenTools"}
