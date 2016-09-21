@@ -118,14 +118,17 @@ class Pager implements \IteratorAggregate, \Countable, \ArrayAccess, \JsonSerial
         elseif ($url)
             $this->setUrl(new Url($url));
 
-        else
+        elseif (isset($_SERVER['REQUEST_URI']))
             $this->setUrl(new Url($_SERVER['REQUEST_URI']));
 
+        else
+            $this->setUrl(new Url('/'));
+
         $this   ->  setResultsPerPage($resultsPerPage)
-            ->  setTotalResultCount($totalResultCount)
-            ->  setQueryParam($queryParam)
-            ->  setRewriteString($rewriteString)
-            ->  setDelta($delta);
+                ->  setTotalResultCount($totalResultCount)
+                ->  setQueryParam($queryParam)
+                ->  setRewriteString($rewriteString)
+                ->  setDelta($delta);
 
         $this   ->  getCurrentPageIteration();
     }
