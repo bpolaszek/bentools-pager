@@ -18,7 +18,7 @@
         }
     ],
     "require": {
-        "php": ">=7.0",
+        "php": ">=7.1",
         "guzzlehttp/psr7": "^1.4"
     },
     "autoload": {
@@ -31,6 +31,8 @@
     },
     "require-dev": {
         "phpunit/phpunit": "@stable",
+        "satooshi/php-coveralls": "@stable",
+        "squizlabs/php_codesniffer": "@stable",
         "symfony/var-dumper": "^3.3"
     }
 }
