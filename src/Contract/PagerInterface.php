@@ -148,6 +148,8 @@ interface PagerInterface extends \IteratorAggregate, \Countable
     public function getPageOffset(PageInterface $page): int;
 
     /**
+     * Dump all Page objects into an array.
+     *
      * @return array
      */
     public function asArray(): array;

@@ -4,7 +4,6 @@ namespace BenTools\Pager\Model;
 
 use BenTools\Pager\Contract\PageInterface;
 use BenTools\Pager\Contract\PagerInterface;
-use BenTools\Pager\Contract\PageUrlBuilderInterface;
 use BenTools\Pager\Model\Exception\PagerException;
 
 class Pager implements PagerInterface
@@ -26,16 +25,58 @@ class Pager implements PagerInterface
 
     /**
      * Pager constructor.
-     * @param int|null                     $perPage
-     * @param int|null                     $currentPageNumber
-     * @param int|null                     $numFound
-     * @throws \RuntimeException
+     * @param int|null $perPage
+     * @param int|null $currentPageNumber
+     * @param int|null $numFound
      */
     public function __construct(int $perPage = null, int $currentPageNumber = null, int $numFound = null)
     {
         $this->perPage = $perPage;
         $this->currentPageNumber = $currentPageNumber;
         $this->numFound = $numFound;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function count(): int
+    {
+        return (int) ceil($this->getNumFound() / $this->getPerPage());
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getIterator(): iterable
+    {
+        for ($nbPages = count($this), $pageNumber = 1; $pageNumber <= $nbPages; $pageNumber++) {
+            yield $this->getPage($pageNumber);
+        }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function asArray(): array
+    {
+        return iterator_to_array($this);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getPage(int $pageNumber): PageInterface
+    {
+        $nbPages = count($this);
+
+        if ($pageNumber > $nbPages) {
+            throw new PagerException(sprintf('Page number %d is invalid, the pager only contains %d pages.', $pageNumber, $nbPages));
+        } elseif ($pageNumber === $nbPages) {
+            $nbItems = ($this->getPerPage() - (($pageNumber * $this->getPerPage()) - $this->getNumFound()));
+        } else {
+            $nbItems = $this->getPerPage();
+        }
+        return new Page($pageNumber, $nbItems);
     }
 
     /**
@@ -53,7 +94,7 @@ class Pager implements PagerInterface
     private function getCurrentPageNumber(): int
     {
         if (null === $this->currentPageNumber) {
-            throw new PagerException(get_class($this) . '::currentPageNumber has not been set.');
+            throw new PagerException(get_class($this) . '::$currentPageNumber has not been set.');
         }
         return $this->currentPageNumber;
     }
@@ -106,49 +147,6 @@ class Pager implements PagerInterface
     public function getOffset(): int
     {
         return ($this->getCurrentPageNumber() - 1) * $this->getPerPage();
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function count(): int
-    {
-        return (int) ceil($this->getNumFound() / $this->getPerPage());
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getIterator(): iterable
-    {
-        for ($nbPages = count($this), $pageNumber = 1; $pageNumber <= $nbPages; $pageNumber++) {
-            yield $this->getPage($pageNumber);
-        }
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getPage(int $pageNumber): PageInterface
-    {
-        $nbPages = count($this);
-
-        if ($pageNumber > $nbPages) {
-            throw new PagerException(sprintf('Page number %d is invalid, the pager contains only %d pages.', $pageNumber, $nbPages));
-        } elseif ($pageNumber === $nbPages) {
-            $nbItems = ($this->getPerPage() - (($pageNumber * $this->getPerPage()) - $this->getNumFound()));
-        } else {
-            $nbItems = $this->getPerPage();
-        }
-        return new Page($pageNumber, $nbItems);
-    }
-
-    /**
-     * @return array
-     */
-    public function asArray(): array
-    {
-        return iterator_to_array($this);
     }
 
     /**
