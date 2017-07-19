@@ -35,14 +35,15 @@ Example
 -------
 
 ```php
-# http://localhost/?page=3
+# http://localhost/?page_number=3
 
 require_once __DIR__ . '/vendor/autoload.php';
 
 use BenTools\Pager\Model\Factory\PageParameterUrlBuilder;
 
 $perPage = 10;
-$pager = PageParameterUrlBuilder::fromRequestUri($perPage)->createPager();
+$urlBuilder = PageParameterUrlBuilder::fromRequestUri($perPage, 'page_number');
+$pager = $urlBuilder->createPager();
 $pager->setNumFound(53);
 
 
@@ -59,26 +60,26 @@ printf('Last page number: %s' . PHP_EOL, $pager->getLastPage());
 print PHP_EOL;
 
 foreach ($pager as $page) {
-    printf('Page %s contains %d items.' . PHP_EOL, $page, count($page));
+    printf('Page %s contains %d items. - Url: %s' . PHP_EOL, $page, count($page), $urlBuilder->buildUrl($pager, $page));
 }
 ```
 
 Output:
 ```
 Total number of pages: 6
-Current page number: 3
+Current page number: 1
 
 First page number: 1
-Previous page number: 2
-Next page number: 4
+Previous page number: 
+Next page number: 2
 Last page number: 6
 
-Page 1 contains 10 items.
-Page 2 contains 10 items.
-Page 3 contains 10 items.
-Page 4 contains 10 items.
-Page 5 contains 10 items.
-Page 6 contains 3 items.
+Page 1 contains 10 items. - Url: /?page_number=1
+Page 2 contains 10 items. - Url: /?page_number=2
+Page 3 contains 10 items. - Url: /?page_number=3
+Page 4 contains 10 items. - Url: /?page_number=4
+Page 5 contains 10 items. - Url: /?page_number=5
+Page 6 contains 3 items. - Url: /?page_number=6
 ```
 
 Delta Management
