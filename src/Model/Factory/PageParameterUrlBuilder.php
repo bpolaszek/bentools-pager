@@ -60,16 +60,17 @@ class PageParameterUrlBuilder implements PageUrlBuilderInterface, PagerFactoryIn
     }
 
     /**
-     * @param string $queryParam
+     * @param int    $perPage
+     * @param string $pageNumberQueryParam
      * @return PageParameterUrlBuilder
      * @throws \RuntimeException
      */
-    public static function fromRequestUri(string $queryParam = 'page'): self
+    public static function fromRequestUri(int $perPage, string $pageNumberQueryParam = 'page'): self
     {
         if (!isset($_SERVER['REQUEST_URI'])) {
             throw new \RuntimeException('$_SERVER[\'REQUEST_URI\'] is not set.');
         }
-        return new static($_SERVER['REQUEST_URI'], $queryParam);
+        return new static($_SERVER['REQUEST_URI'], $perPage, $pageNumberQueryParam);
     }
 
     /**

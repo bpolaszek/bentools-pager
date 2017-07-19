@@ -32,7 +32,7 @@ class DeltaPager implements PagerInterface
      * @param PagerInterface $pager
      * @param int            $delta
      */
-    public function __construct(PagerInterface $pager, int $delta, bool $showFirstPage = true, bool $showLastPage = true)
+    public function __construct(PagerInterface $pager, int $delta = 0, bool $showFirstPage = true, bool $showLastPage = true)
     {
         $this->pager = $pager;
         $this->delta = $delta;

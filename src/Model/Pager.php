@@ -134,7 +134,7 @@ class Pager implements PagerInterface
         $nbPages = count($this);
 
         if ($pageNumber > $nbPages) {
-            throw new PagerException(sprintf('Invalid page number: requested %d, got %d total pages.', $pageNumber, $nbPages));
+            throw new PagerException(sprintf('Page number %d is invalid, the pager contains only %d pages.', $pageNumber, $nbPages));
         } elseif ($pageNumber === $nbPages) {
             $nbItems = ($this->getPerPage() - (($pageNumber * $this->getPerPage()) - $this->getNumFound()));
         } else {

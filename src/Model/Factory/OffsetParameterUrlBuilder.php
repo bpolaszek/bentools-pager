@@ -25,19 +25,19 @@ class OffsetParameterUrlBuilder implements PageUrlBuilderInterface, PagerFactory
     /**
      * @var string
      */
-    private $offsetParam;
+    private $offsetQueryParam;
 
     /**
      * PageUrlBuilder constructor.
      * @param string $baseUrl
      * @param int    $perPage
-     * @param string $offsetParam
+     * @param string $offsetQueryParam
      */
-    public function __construct(string $baseUrl, int $perPage, string $offsetParam)
+    public function __construct(string $baseUrl, int $perPage, string $offsetQueryParam)
     {
         $this->baseUrl = $baseUrl;
         $this->perPage = $perPage;
-        $this->offsetParam = $offsetParam;
+        $this->offsetQueryParam = $offsetQueryParam;
     }
 
     /**
@@ -46,7 +46,7 @@ class OffsetParameterUrlBuilder implements PageUrlBuilderInterface, PagerFactory
     private function getCurrentPageNumber(): int
     {
         $parsedQuery = parse_query((new Uri($this->baseUrl))->getQuery());
-        $currentOffset = $parsedQuery[$this->offsetParam] ?? 0;
+        $currentOffset = $parsedQuery[$this->offsetQueryParam] ?? 0;
         return (int) floor($currentOffset / $this->perPage) + 1;
     }
 
@@ -55,21 +55,21 @@ class OffsetParameterUrlBuilder implements PageUrlBuilderInterface, PagerFactory
      */
     public function buildUrl(PagerInterface $pager, PageInterface $page): string
     {
-        return (string) Uri::withQueryValue(new Uri($this->baseUrl), $this->offsetParam, $pager->getPageOffset($page));
+        return (string) Uri::withQueryValue(new Uri($this->baseUrl), $this->offsetQueryParam, $pager->getPageOffset($page));
     }
 
     /**
-     * @param string $offsetParam
      * @param int    $perPage
+     * @param string $offsetParam
      * @return OffsetParameterUrlBuilder
      * @throws \RuntimeException
      */
-    public static function fromRequestUri(string $offsetParam, int $perPage): self
+    public static function fromRequestUri(int $perPage, string $offsetParam): self
     {
         if (!isset($_SERVER['REQUEST_URI'])) {
             throw new \RuntimeException('$_SERVER[\'REQUEST_URI\'] is not set.');
         }
-        return new static($_SERVER['REQUEST_URI'], $offsetParam, $perPage);
+        return new static($_SERVER['REQUEST_URI'], $perPage, $offsetParam);
     }
 
     /**
