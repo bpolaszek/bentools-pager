@@ -60,7 +60,12 @@ printf('Last page number: %s' . PHP_EOL, $pager->getLastPage());
 print PHP_EOL;
 
 foreach ($pager as $page) {
-    printf('Page %s contains %d items. - Url: %s' . PHP_EOL, $page, count($page), $urlBuilder->buildUrl($pager, $page));
+    printf(
+            'Page %s contains %d items. - Url: %s' . PHP_EOL, 
+            $page, 
+            count($page), 
+            $urlBuilder->buildUrl($pager, $page)
+        );
 }
 ```
 
