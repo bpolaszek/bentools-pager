@@ -22,12 +22,8 @@ You just need to provide 3 informations:
 ```php
 use BenTools\Pager\Model\Pager;
 
-$perPage = 10;
-$currentPageNumber = 1;
-$numFound = 53;
-$pager = new Pager($perPage, $currentPageNumber, $numFound);
-foreach ($pager as $page) {
-    // do stuff
+foreach (new Pager($perPage, $currentPageNumber, $numFound) as $page) {
+    // ...
 }
 ```
 
