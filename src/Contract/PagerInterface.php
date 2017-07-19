@@ -146,4 +146,9 @@ interface PagerInterface extends \IteratorAggregate, \Countable
      * @return int
      */
     public function getPageOffset(PageInterface $page): int;
+
+    /**
+     * @return array
+     */
+    public function asArray(): array;
 }

@@ -28,4 +28,24 @@ class PageParameterUrlBuilderTest extends TestCase
         $this->assertEquals('http://www.example.org/foo?PageNumber=8#bar', $qb->buildUrl($pager, $pager->getPage(8)));
     }
 
+
+
+    /**
+     * @expectedException \RuntimeException
+     */
+    public function testFactoryFails()
+    {
+        unset($_SERVER['REQUEST_URI']);
+        $qb = PageParameterUrlBuilder::fromRequestUri(50);
+    }
+
+    public function testFactorySucceeds()
+    {
+        $_SERVER['REQUEST_URI'] = 'http://foo.bar/?page_number=3';
+        $qb = PageParameterUrlBuilder::fromRequestUri(50, 'page_number');
+        $pager = $qb->createPager();
+        $pager->setNumFound(500);
+        $this->assertEquals(3, $pager->getCurrentPage()->getPageNumber());
+    }
+
 }

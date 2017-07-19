@@ -28,4 +28,22 @@ class OffsetParameterUrlBuilderTest extends TestCase
         $this->assertEquals('http://www.example.org/foo?offset=70#bar', $qb->buildUrl($pager, $pager->getPage(8)));
     }
 
+    /**
+     * @expectedException \RuntimeException
+     */
+    public function testFactoryFails()
+    {
+        unset($_SERVER['REQUEST_URI']);
+        $qb = OffsetParameterUrlBuilder::fromRequestUri(50, 'offset');
+    }
+
+    public function testFactorySucceeds()
+    {
+        $_SERVER['REQUEST_URI'] = 'http://foo.bar/?offset=100';
+        $qb = OffsetParameterUrlBuilder::fromRequestUri(50, 'offset');
+        $pager = $qb->createPager();
+        $pager->setNumFound(500);
+        $this->assertEquals(3, $pager->getCurrentPage()->getPageNumber());
+    }
+
 }

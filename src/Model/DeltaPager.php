@@ -53,6 +53,11 @@ class DeltaPager implements PagerInterface
         }
     }
 
+    public function asArray(): array
+    {
+        return iterator_to_array($this);
+    }
+
     /**
      * @param PageInterface $page
      * @return bool

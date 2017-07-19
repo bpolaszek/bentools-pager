@@ -142,4 +142,14 @@ class PagerTest extends TestCase
         $this->assertCount(3, $pager->getPage(6));
     }
 
+    /**
+     * @expectedException \BenTools\Pager\Model\Exception\PagerException
+     */
+    public function testThrowExceptionOnOutOfRange()
+    {
+        $pager = $this->pager;
+        $pager->setNumFound(10);
+        $pager->getPage(2);
+    }
+
 }
