@@ -5,14 +5,10 @@ namespace BenTools\Pager\Model;
 use BenTools\Pager\Contract\PageInterface;
 use BenTools\Pager\Contract\PagerInterface;
 use BenTools\Pager\Contract\PageUrlBuilderInterface;
+use BenTools\Pager\Model\Exception\PagerException;
 
 class Pager implements PagerInterface
 {
-    /**
-     * @var int
-     */
-    private $currentPageNumber;
-
     /**
      * @var int
      */
@@ -21,61 +17,45 @@ class Pager implements PagerInterface
     /**
      * @var int
      */
-    private $numFound;
+    private $currentPageNumber;
 
     /**
-     * @var PageUrlBuilderInterface
+     * @var int
      */
-    private $urlBuilder;
+    private $numFound;
 
     /**
      * Pager constructor.
      * @param int|null                     $perPage
-     * @param PageUrlBuilderInterface|null $urlBuilder
-     * @param int|null                     $numFound
      * @param int|null                     $currentPageNumber
+     * @param int|null                     $numFound
      * @throws \RuntimeException
      */
-    public function __construct(int $perPage = null, PageUrlBuilderInterface $urlBuilder = null, int $numFound = null, int $currentPageNumber = null)
+    public function __construct(int $perPage = null, int $currentPageNumber = null, int $numFound = null)
     {
         $this->perPage = $perPage;
-        $this->urlBuilder = $urlBuilder ?? PageParameterUrlBuilder::fromRequestUri();
-        $this->numFound = $numFound;
         $this->currentPageNumber = $currentPageNumber;
+        $this->numFound = $numFound;
     }
 
     /**
-     * @param PageUrlBuilderInterface $urlBuilder
-     * @return Pager
+     * @inheritdoc
      */
-    public function setUrlBuilder(PageUrlBuilderInterface $urlBuilder): Pager
+    public function setCurrentPageNumber(int $currentPageNumber): PagerInterface
     {
-        $this->urlBuilder = $urlBuilder;
+        $this->currentPageNumber = $currentPageNumber;
         return $this;
     }
 
     /**
      * @inheritDoc
      */
-    public function buildUrl(PagerInterface $pager, PageInterface $page): string
+    private function getCurrentPageNumber(): int
     {
-        return $this->urlBuilder->buildUrl($this, $page);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getOffset(): int
-    {
-        return ($this->getCurrentPageNumber() - 1) * $this->getPerPage();
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function count(): int
-    {
-        return (int) ceil($this->getNumFound() / $this->getPerPage());
+        if (null === $this->currentPageNumber) {
+            throw new PagerException(get_class($this) . '::currentPageNumber has not been set.');
+        }
+        return $this->currentPageNumber;
     }
 
     /**
@@ -93,7 +73,7 @@ class Pager implements PagerInterface
      * @param int $numFound
      * @return Pager
      */
-    public function setNumFound(int $numFound): Pager
+    public function setNumFound(int $numFound): PagerInterface
     {
         $this->numFound = $numFound;
         return $this;
@@ -114,10 +94,26 @@ class Pager implements PagerInterface
      * @param int $perPage
      * @return Pager
      */
-    public function setPerPage(int $perPage): Pager
+    public function setPerPage(int $perPage): PagerInterface
     {
         $this->perPage = $perPage;
         return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getOffset(): int
+    {
+        return ($this->getCurrentPageNumber() - 1) * $this->getPerPage();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function count(): int
+    {
+        return (int) ceil($this->getNumFound() / $this->getPerPage());
     }
 
     /**
@@ -145,22 +141,6 @@ class Pager implements PagerInterface
             $nbItems = $this->getPerPage();
         }
         return new Page($pageNumber, $nbItems);
-    }
-
-    /**
-     * @param int $currentPageNumber
-     */
-    public function setCurrentPageNumber(int $currentPageNumber)
-    {
-        $this->currentPageNumber = $currentPageNumber;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getCurrentPageNumber(): int
-    {
-        return null !== $this->currentPageNumber ? $this->currentPageNumber : $this->urlBuilder->getCurrentPageNumber();
     }
 
     /**

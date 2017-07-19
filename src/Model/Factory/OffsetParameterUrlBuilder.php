@@ -1,14 +1,16 @@
 <?php
 
-namespace BenTools\Pager\Model;
+namespace BenTools\Pager\Model\Factory;
 
 use BenTools\Pager\Contract\PageInterface;
+use BenTools\Pager\Contract\PagerFactoryInterface;
 use BenTools\Pager\Contract\PagerInterface;
 use BenTools\Pager\Contract\PageUrlBuilderInterface;
+use BenTools\Pager\Model\Pager;
 use function GuzzleHttp\Psr7\parse_query;
 use GuzzleHttp\Psr7\Uri;
 
-class OffsetParameterUrlBuilder implements PageUrlBuilderInterface
+class OffsetParameterUrlBuilder implements PageUrlBuilderInterface, PagerFactoryInterface
 {
     /**
      * @var string
@@ -16,29 +18,32 @@ class OffsetParameterUrlBuilder implements PageUrlBuilderInterface
     private $baseUrl;
 
     /**
-     * @var string
-     */
-    private $offsetParam;
-
-    /**
      * @var int
      */
     private $perPage;
 
     /**
-     * PageUrlBuilder constructor.
+     * @var string
      */
-    public function __construct(string $baseUrl, string $offsetParam, int $perPage)
+    private $offsetParam;
+
+    /**
+     * PageUrlBuilder constructor.
+     * @param string $baseUrl
+     * @param int    $perPage
+     * @param string $offsetParam
+     */
+    public function __construct(string $baseUrl, int $perPage, string $offsetParam)
     {
         $this->baseUrl = $baseUrl;
-        $this->offsetParam = $offsetParam;
         $this->perPage = $perPage;
+        $this->offsetParam = $offsetParam;
     }
 
     /**
      * @inheritDoc
      */
-    public function getCurrentPageNumber(): int
+    private function getCurrentPageNumber(): int
     {
         $parsedQuery = parse_query((new Uri($this->baseUrl))->getQuery());
         $currentOffset = $parsedQuery[$this->offsetParam] ?? 0;
@@ -65,5 +70,15 @@ class OffsetParameterUrlBuilder implements PageUrlBuilderInterface
             throw new \RuntimeException('$_SERVER[\'REQUEST_URI\'] is not set.');
         }
         return new static($_SERVER['REQUEST_URI'], $offsetParam, $perPage);
+    }
+
+    /**
+     * @param int|null $numFound
+     * @return PagerInterface
+     */
+    public function createPager(int $numFound = null): PagerInterface
+    {
+        $pager = new Pager($this->perPage, $this->getCurrentPageNumber(), $numFound);
+        return $pager;
     }
 }

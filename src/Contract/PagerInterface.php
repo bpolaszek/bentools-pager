@@ -2,15 +2,8 @@
 
 namespace BenTools\Pager\Contract;
 
-interface PagerInterface extends \IteratorAggregate, \Countable, PageUrlBuilderInterface
+interface PagerInterface extends \IteratorAggregate, \Countable
 {
-
-    /**
-     * The current offset.
-     *
-     * @return int
-     */
-    public function getOffset(): int;
 
     /**
      * The number of items to show per page.
@@ -20,11 +13,36 @@ interface PagerInterface extends \IteratorAggregate, \Countable, PageUrlBuilderI
     public function getPerPage(): int;
 
     /**
+     * @param int $perPage
+     * @return PagerInterface
+     */
+    public function setPerPage(int $perPage): PagerInterface;
+
+    /**
      * Return the total number of items.
      *
      * @return int
      */
     public function getNumFound(): int;
+
+    /**
+     * @param int $numFound
+     * @return PagerInterface
+     */
+    public function setNumFound(int $numFound): PagerInterface;
+
+    /**
+     * @param int $currentPageNumber
+     * @return PagerInterface
+     */
+    public function setCurrentPageNumber(int $currentPageNumber): PagerInterface;
+
+    /**
+     * The current offset.
+     *
+     * @return int
+     */
+    public function getOffset(): int;
 
     /**
      * Return the total number of pages.

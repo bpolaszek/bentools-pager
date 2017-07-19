@@ -3,7 +3,6 @@
 namespace BenTools\Pager\Tests;
 
 use BenTools\Pager\Contract\PageInterface;
-use BenTools\Pager\Model\PageParameterUrlBuilder;
 use BenTools\Pager\Model\Pager;
 use PHPUnit\Framework\TestCase;
 
@@ -16,11 +15,12 @@ class PagerTest extends TestCase
 
     public function setUp()
     {
-        $this->pager = new Pager(10, new PageParameterUrlBuilder('http://www.example.org/foo'));
+        $this->pager = new Pager(10, 1);
     }
 
     /**
-     * @expectedException \BenTools\Pager\Model\PagerException
+     * @expectedException \BenTools\Pager\Model\Exception\PagerException
+     * @expectedExceptionMessage numFound has not been set
      */
     public function testItThrowsErrorWhenSomethingIsMissing()
     {
@@ -58,7 +58,7 @@ class PagerTest extends TestCase
         $pager = $this->pager;
         $pager->setNumFound(53);
 
-        $this->assertEquals(1, $pager->getCurrentPageNumber());
+        $this->assertEquals(1, $pager->getCurrentPage()->getPageNumber());
         $this->assertNull($pager->getPreviousPage());
 
         $pager->setCurrentPageNumber(3);
@@ -73,7 +73,7 @@ class PagerTest extends TestCase
         $pager = $this->pager;
         $pager->setNumFound(53);
 
-        $this->assertEquals(1, $pager->getCurrentPageNumber());
+        $this->assertEquals(1, $pager->getCurrentPage()->getPageNumber());
         $nextPage = $pager->getNextPage();
         $this->assertInstanceOf(PageInterface::class, $nextPage);
         $this->assertEquals(2, $nextPage->getPageNumber());
@@ -88,7 +88,7 @@ class PagerTest extends TestCase
         $pager = $this->pager;
         $pager->setNumFound(53);
 
-        $this->assertEquals(1, $pager->getCurrentPageNumber());
+        $this->assertEquals(1, $pager->getCurrentPage()->getPageNumber());
         $firstPage = $pager->getFirstPage();
         $this->assertInstanceOf(PageInterface::class, $firstPage);
         $this->assertEquals(1, $firstPage->getPageNumber());
@@ -106,7 +106,7 @@ class PagerTest extends TestCase
         $pager = $this->pager;
         $pager->setNumFound(53);
 
-        $this->assertEquals(1, $pager->getCurrentPageNumber());
+        $this->assertEquals(1, $pager->getCurrentPage()->getPageNumber());
         $lastPage = $pager->getLastPage();
         $this->assertInstanceOf(PageInterface::class, $lastPage);
         $this->assertEquals(6, $lastPage->getPageNumber());

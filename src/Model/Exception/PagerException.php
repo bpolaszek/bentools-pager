@@ -1,6 +1,6 @@
 <?php
 
-namespace BenTools\Pager\Model;
+namespace BenTools\Pager\Model\Exception;
 
 class PagerException extends \RuntimeException
 {
