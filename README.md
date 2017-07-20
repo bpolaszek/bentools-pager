@@ -23,7 +23,10 @@ You just need to provide 3 informations:
 use BenTools\Pager\Model\Pager;
 
 foreach (new Pager($perPage, $currentPageNumber, $numFound) as $page) {
-    // ...
+    $page->getPageNumber(); // Returns the page number
+    $page->count(); // Returns the number of items the page contains
+    (string) $page; // $page->getPageNumber() shortcut
+    count($page); // $page->count() shortcut
 }
 ```
 
