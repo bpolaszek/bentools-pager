@@ -8,7 +8,7 @@
 bentools/pager
 ==============
 
-PHP7.1+ - An OOP pager, the way it should be, with a KISS approach.
+PHP7.1+ - An OOP pager, the way it should be, following [SOLID](https://en.wikipedia.org/wiki/SOLID_(object-oriented_design)) principles.
 
 Usage
 -----
