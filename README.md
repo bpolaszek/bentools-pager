@@ -8,7 +8,7 @@
 bentools/pager
 ==============
 
-PHP7.1+ - An OOP pager, the way it should be, following [SOLID](https://en.wikipedia.org/wiki/SOLID_(object-oriented_design)) principles.
+PHP7.1+ - A simple OOP pager, the way it should be, following [SOLID](https://en.wikipedia.org/wiki/SOLID_(object-oriented_design)) principles.
 
 Usage
 -----
@@ -25,10 +25,18 @@ use BenTools\Pager\Model\Pager;
 foreach (new Pager($perPage, $currentPageNumber, $numFound) as $page) {
     $page->getPageNumber(); // Returns the page number
     $page->count(); // Returns the number of items the page contains
+}
+```
+
+Shortcuts:
+
+```php
+use BenTools\Pager\Model\Pager;
+
+foreach (new Pager($perPage, $currentPageNumber, $numFound) as $page) {
     (string) $page; // $page->getPageNumber() shortcut
     count($page); // $page->count() shortcut
 }
-```
 
 Example
 -------
@@ -41,7 +49,8 @@ require_once __DIR__ . '/vendor/autoload.php';
 use BenTools\Pager\Model\Factory\PageParameterUrlBuilder;
 
 $perPage = 10;
-$urlBuilder = PageParameterUrlBuilder::fromRequestUri($perPage, 'page_number');
+// It will look for a page_number param in the request URI (and sets current page to #1 if not found)
+$urlBuilder = PageParameterUrlBuilder::fromRequestUri($perPage, 'page_number'); 
 $pager = $urlBuilder->createPager();
 $pager->setNumFound(53);
 
