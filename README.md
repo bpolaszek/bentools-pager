@@ -37,6 +37,7 @@ foreach (new Pager($perPage, $currentPageNumber, $numFound) as $page) {
     (string) $page; // $page->getPageNumber() shortcut
     count($page); // $page->count() shortcut
 }
+```
 
 Example
 -------
