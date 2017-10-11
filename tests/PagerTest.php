@@ -36,6 +36,15 @@ class PagerTest extends TestCase
         $this->assertCount(6, $pager->asArray());
     }
 
+    public function testPagerWithNoItems()
+    {
+        $pager = $this->pager;
+        $pager->setNumFound(0);
+        $this->assertCount(1, $pager);
+        $this->assertCount(1, $pager->asArray());
+        $this->assertCount(0, $pager->getFirstPage());
+    }
+
     public function testCurrentPage()
     {
         $pager = $this->pager;
