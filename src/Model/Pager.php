@@ -41,7 +41,7 @@ class Pager implements PagerInterface
      */
     public function count(): int
     {
-        return (int) ceil($this->getNumFound() / $this->getPerPage());
+        return max(1, (int) ceil($this->getNumFound() / $this->getPerPage()));
     }
 
     /**
