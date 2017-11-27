@@ -13,6 +13,11 @@ interface PagerInterface extends \IteratorAggregate, \Countable
     public function getPerPage(): int;
 
     /**
+     * @return int
+     */
+    public function getCurrentPageNumber(): int;
+
+    /**
      * @param int $perPage
      * @return PagerInterface
      */

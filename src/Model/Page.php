@@ -3,8 +3,9 @@
 namespace BenTools\Pager\Model;
 
 use BenTools\Pager\Contract\PageInterface;
+use BenTools\Pager\Model\Exception\PagerException;
 
-class Page implements PageInterface
+final class Page implements PageInterface
 {
     /**
      * @var int
@@ -21,7 +22,7 @@ class Page implements PageInterface
      * @param int $pageNumber
      * @param int $nbItems
      */
-    public function __construct(int $pageNumber, int $nbItems)
+    public function __construct(int $pageNumber, int $nbItems = null)
     {
         $this->pageNumber = $pageNumber;
         $this->nbItems = $nbItems;
@@ -40,6 +41,9 @@ class Page implements PageInterface
      */
     public function count(): int
     {
+        if (null === $this->nbItems) {
+            throw new PagerException("The number of items has not been provided.");
+        }
         return $this->nbItems;
     }
 

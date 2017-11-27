@@ -6,7 +6,7 @@ use BenTools\Pager\Contract\PageInterface;
 use BenTools\Pager\Contract\PagerInterface;
 use BenTools\Pager\Model\Exception\PagerException;
 
-class Pager implements PagerInterface
+final class Pager implements PagerInterface
 {
     /**
      * @var int
@@ -68,15 +68,7 @@ class Pager implements PagerInterface
     public function getPage(int $pageNumber): PageInterface
     {
         $nbPages = count($this);
-
-        if ($pageNumber > $nbPages) {
-            throw new PagerException(sprintf('Page number %d is invalid, the pager only contains %d pages.', $pageNumber, $nbPages));
-        } elseif ($pageNumber === $nbPages) {
-            $nbItems = ($this->getPerPage() - (($pageNumber * $this->getPerPage()) - $this->getNumFound()));
-        } else {
-            $nbItems = $this->getPerPage();
-        }
-        return new Page($pageNumber, $nbItems);
+        return new Page($pageNumber, $this->computeNbItems($pageNumber, $nbPages));
     }
 
     /**
@@ -91,7 +83,7 @@ class Pager implements PagerInterface
     /**
      * @inheritDoc
      */
-    private function getCurrentPageNumber(): int
+    public function getCurrentPageNumber(): int
     {
         if (null === $this->currentPageNumber) {
             throw new PagerException(get_class($this) . '::$currentPageNumber has not been set.');
@@ -242,5 +234,24 @@ class Pager implements PagerInterface
     public function getPageOffset(PageInterface $page): int
     {
         return ($page->getPageNumber() - 1) * $this->getPerPage();
+    }
+
+    /**
+     * @param int $pageNumber
+     * @param int $nbPages
+     * @return int
+     * @throws PagerException
+     */
+    private function computeNbItems(int $pageNumber, int $nbPages): int
+    {
+        if ($pageNumber > $nbPages) {
+            throw new PagerException(sprintf('Page number %d is invalid, the pager only contains %d pages.', $pageNumber, $nbPages));
+        }
+
+        if ($pageNumber === $nbPages) {
+            return ($this->getPerPage() - (($pageNumber * $this->getPerPage()) - $this->getNumFound()));
+        }
+
+        return $this->getPerPage();
     }
 }

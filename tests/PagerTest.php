@@ -29,9 +29,10 @@ class PagerTest extends TestCase
 
     public function testPager()
     {
-        $pager = $this->pager;
-        $pager->setNumFound(53);
+        $pager = new Pager(10, 2);
+        $this->assertEquals(2, $pager->getCurrentPageNumber());
 
+        $pager->setNumFound(53);
         $this->assertCount(6, $pager);
         $this->assertCount(6, $pager->asArray());
     }

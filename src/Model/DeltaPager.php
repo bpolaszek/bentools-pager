@@ -5,7 +5,7 @@ namespace BenTools\Pager\Model;
 use BenTools\Pager\Contract\PageInterface;
 use BenTools\Pager\Contract\PagerInterface;
 
-class DeltaPager implements PagerInterface
+final class DeltaPager implements PagerInterface
 {
     /**
      * @var PagerInterface
@@ -38,6 +38,14 @@ class DeltaPager implements PagerInterface
         $this->delta = $delta;
         $this->showFirstPage = $showFirstPage;
         $this->showLastPage = $showLastPage;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getCurrentPageNumber(): int
+    {
+        return $this->pager->getCurrentPageNumber();
     }
 
     /**

@@ -7,8 +7,8 @@ use BenTools\Pager\Contract\PagerFactoryInterface;
 use BenTools\Pager\Contract\PagerInterface;
 use BenTools\Pager\Contract\PageUrlBuilderInterface;
 use BenTools\Pager\Model\Pager;
-use function GuzzleHttp\Psr7\parse_query;
-use GuzzleHttp\Psr7\Uri;
+use function BenTools\QueryString\query_string;
+use function BenTools\UriFactory\Helper\uri;
 
 class PageParameterUrlBuilder implements PageUrlBuilderInterface, PagerFactoryInterface
 {
@@ -47,8 +47,7 @@ class PageParameterUrlBuilder implements PageUrlBuilderInterface, PagerFactoryIn
      */
     private function getCurrentPageNumber(): int
     {
-        $parsedQuery = parse_query((new Uri($this->baseUrl))->getQuery());
-        return $parsedQuery[$this->pageNumberQueryParam] ?? 1;
+        return query_string(uri($this->baseUrl))->getParam($this->pageNumberQueryParam) ?? 1;
     }
 
     /**
@@ -56,7 +55,15 @@ class PageParameterUrlBuilder implements PageUrlBuilderInterface, PagerFactoryIn
      */
     public function buildUrl(PagerInterface $pager, PageInterface $page): string
     {
-        return (string) Uri::withQueryValue(new Uri($this->baseUrl), $this->pageNumberQueryParam, $page->getPageNumber());
+        $uri = uri($this->baseUrl);
+        $qs = query_string($uri->getQuery());
+
+        return (string) $uri->withQuery(
+            (string) $qs->withParam(
+                $this->pageNumberQueryParam,
+                $page->getPageNumber()
+            )
+        );
     }
 
     /**

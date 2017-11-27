@@ -7,8 +7,8 @@ use BenTools\Pager\Contract\PagerFactoryInterface;
 use BenTools\Pager\Contract\PagerInterface;
 use BenTools\Pager\Contract\PageUrlBuilderInterface;
 use BenTools\Pager\Model\Pager;
-use function GuzzleHttp\Psr7\parse_query;
-use GuzzleHttp\Psr7\Uri;
+use function BenTools\QueryString\query_string;
+use function BenTools\UriFactory\Helper\uri;
 
 class OffsetParameterUrlBuilder implements PageUrlBuilderInterface, PagerFactoryInterface
 {
@@ -45,8 +45,9 @@ class OffsetParameterUrlBuilder implements PageUrlBuilderInterface, PagerFactory
      */
     private function getCurrentPageNumber(): int
     {
-        $parsedQuery = parse_query((new Uri($this->baseUrl))->getQuery());
-        $currentOffset = $parsedQuery[$this->offsetQueryParam] ?? 0;
+        $qs = query_string(uri($this->baseUrl));
+        $currentOffset = $qs->getParam($this->offsetQueryParam) ?? 0;
+
         return (int) floor($currentOffset / $this->perPage) + 1;
     }
 
@@ -55,7 +56,15 @@ class OffsetParameterUrlBuilder implements PageUrlBuilderInterface, PagerFactory
      */
     public function buildUrl(PagerInterface $pager, PageInterface $page): string
     {
-        return (string) Uri::withQueryValue(new Uri($this->baseUrl), $this->offsetQueryParam, $pager->getPageOffset($page));
+        $uri = uri($this->baseUrl);
+        $qs = query_string($uri->getQuery());
+
+        return (string) $uri->withQuery(
+            (string) $qs->withParam(
+                $this->offsetQueryParam,
+                $pager->getPageOffset($page)
+            )
+        );
     }
 
     /**
