@@ -158,4 +158,10 @@ interface PagerInterface extends \IteratorAggregate, \Countable
      * @return array
      */
     public function asArray(): array;
+
+    /**
+     * @param PageInterface $page
+     * @return string
+     */
+    public function getUrl(PageInterface $page): string;
 }

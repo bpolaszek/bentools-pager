@@ -36,7 +36,7 @@ class PageParameterUrlBuilder implements PageUrlBuilderInterface, PagerFactoryIn
     public function __construct(string $baseUrl, int $perPage, string $pageNumberQueryParam = 'page')
     {
         $this->baseUrl = $baseUrl;
-        $this->perPage = $perPage;
+        $this->perPage = max(0, $perPage);
         $this->pageNumberQueryParam = $pageNumberQueryParam;
     }
 
@@ -86,7 +86,7 @@ class PageParameterUrlBuilder implements PageUrlBuilderInterface, PagerFactoryIn
      */
     public function createPager(int $numFound = null): PagerInterface
     {
-        $pager = new Pager($this->perPage, $this->getCurrentPageNumber(), $numFound);
+        $pager = new Pager($this->perPage, $this->getCurrentPageNumber(), $numFound, $this);
         return $pager;
     }
 }

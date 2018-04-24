@@ -3,25 +3,28 @@
 namespace BenTools\Pager\Tests;
 
 use BenTools\Pager\Contract\PageInterface;
+use BenTools\Pager\Contract\PagerFactoryInterface;
+use BenTools\Pager\Model\Factory\PageParameterUrlBuilder;
 use BenTools\Pager\Model\Page;
 use BenTools\Pager\Model\Pager;
 use PHPUnit\Framework\TestCase;
 
 class PagerTest extends TestCase
 {
-    /**
-     * @var Pager
-     */
-    private $pager;
 
-    public function setUp()
+    /**
+     * @var PagerFactoryInterface
+     */
+    private $factory;
+
+    protected function setUp()
     {
-        $this->pager = new Pager(10, 1);
+        $this->factory = new PageParameterUrlBuilder('http://localhost/?foo=bar', 10);
     }
 
     public function testPager()
     {
-        $pager = new Pager(10, 2);
+        $pager = new Pager(10, 2, null, $this->factory);
         $this->assertEquals(2, $pager->getCurrentPageNumber());
 
         $pager->setNumFound(53);
@@ -31,7 +34,7 @@ class PagerTest extends TestCase
 
     public function testPagerWithNoItems()
     {
-        $pager = $this->pager;
+        $pager = $this->factory->createPager();
         $pager->setNumFound(0);
         $this->assertCount(1, $pager);
         $this->assertCount(1, $pager->asArray());
@@ -40,7 +43,7 @@ class PagerTest extends TestCase
 
     public function testCurrentPage()
     {
-        $pager = $this->pager;
+        $pager = $this->factory->createPager();
         $pager->setNumFound(53);
 
         $currentPage = $pager->getCurrentPage();
@@ -57,7 +60,7 @@ class PagerTest extends TestCase
 
     public function testPreviousPage()
     {
-        $pager = $this->pager;
+        $pager = $this->factory->createPager();
         $pager->setNumFound(53);
 
         $this->assertEquals(1, $pager->getCurrentPage()->getPageNumber());
@@ -72,7 +75,7 @@ class PagerTest extends TestCase
 
     public function testNextPage()
     {
-        $pager = $this->pager;
+        $pager = $this->factory->createPager();
         $pager->setNumFound(53);
 
         $this->assertEquals(1, $pager->getCurrentPage()->getPageNumber());
@@ -87,7 +90,7 @@ class PagerTest extends TestCase
 
     public function testFirstPage()
     {
-        $pager = $this->pager;
+        $pager = $this->factory->createPager();
         $pager->setNumFound(53);
 
         $this->assertEquals(1, $pager->getCurrentPage()->getPageNumber());
@@ -105,7 +108,7 @@ class PagerTest extends TestCase
 
     public function testLastPage()
     {
-        $pager = $this->pager;
+        $pager = $this->factory->createPager();
         $pager->setNumFound(53);
 
         $this->assertEquals(1, $pager->getCurrentPage()->getPageNumber());
@@ -123,7 +126,7 @@ class PagerTest extends TestCase
 
     public function testPageOffset()
     {
-        $pager = $this->pager;
+        $pager = $this->factory->createPager();
         $pager->setNumFound(53);
 
         $this->assertEquals(0, $pager->getPageOffset($pager->getFirstPage()));
@@ -133,7 +136,7 @@ class PagerTest extends TestCase
 
     public function testNbItems()
     {
-        $pager = $this->pager;
+        $pager = $this->factory->createPager();
         $pager->setNumFound(53);
 
         $this->assertCount(10, $pager->getFirstPage());
@@ -146,7 +149,7 @@ class PagerTest extends TestCase
 
     public function testgetPageOutOfRange()
     {
-        $pager = $this->pager;
+        $pager = $this->factory->createPager();
         $pager->setNumFound(10);
         $page = $pager->getPage(2);
         $this->assertInstanceOf(Page::class, $page);

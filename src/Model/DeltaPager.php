@@ -243,4 +243,13 @@ final class DeltaPager implements PagerInterface
     {
         return $this->pager->getPageOffset($page);
     }
+
+    /**
+     * @param PageInterface $page
+     * @return string
+     */
+    public function getUrl(PageInterface $page): string
+    {
+        return $this->pager->getUrl($page);
+    }
 }

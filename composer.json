@@ -11,12 +11,6 @@
             "role": "Developer"
         }
     ],
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/bpolaszek/bentools-pager"
-        }
-    ],
     "require": {
         "php": ">=7.1",
         "psr/http-message": "^1.0",

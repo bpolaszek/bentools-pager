@@ -4,6 +4,9 @@ namespace BenTools\Pager\Model;
 
 use BenTools\Pager\Contract\PageInterface;
 use BenTools\Pager\Contract\PagerInterface;
+use BenTools\Pager\Contract\PageUrlBuilderInterface;
+use BenTools\Pager\Model\Factory\PageParameterUrlBuilder;
+use function BenTools\UriFactory\Helper\current_location;
 
 final class Pager implements PagerInterface
 {
@@ -23,16 +26,23 @@ final class Pager implements PagerInterface
     private $numFound;
 
     /**
-     * Pager constructor.
-     * @param int|null $perPage
-     * @param int|null $currentPageNumber
-     * @param int|null $numFound
+     * @var PageUrlBuilderInterface
      */
-    public function __construct(int $perPage = null, int $currentPageNumber = null, int $numFound = null)
+    private $urlBuilder;
+
+    /**
+     * Pager constructor.
+     * @param int|null                     $perPage
+     * @param int|null                     $currentPageNumber
+     * @param int|null                     $numFound
+     * @param PageUrlBuilderInterface|null $urlBuilder
+     */
+    public function __construct(int $perPage = null, int $currentPageNumber = null, int $numFound = null, PageUrlBuilderInterface $urlBuilder = null)
     {
         $this->perPage = $perPage ?? 0;
         $this->currentPageNumber = $currentPageNumber ?? 1;
         $this->numFound = $numFound ?? 0;
+        $this->urlBuilder = $urlBuilder ?? new PageParameterUrlBuilder((string) current_location(), $this->perPage);
     }
 
     /**
@@ -227,6 +237,23 @@ final class Pager implements PagerInterface
     public function getPageOffset(PageInterface $page): int
     {
         return ($page->getPageNumber() - 1) * $this->getPerPage();
+    }
+
+    /**
+     * @param PageUrlBuilderInterface $urlBuilder
+     */
+    public function setUrlBuilder(PageUrlBuilderInterface $urlBuilder): void
+    {
+        $this->urlBuilder = $urlBuilder;
+    }
+
+    /**
+     * @param PageInterface $page
+     * @return string
+     */
+    public function getUrl(PageInterface $page): string
+    {
+        return $this->urlBuilder->buildUrl($this, $page);
     }
 
     /**

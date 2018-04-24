@@ -36,7 +36,7 @@ class OffsetParameterUrlBuilder implements PageUrlBuilderInterface, PagerFactory
     public function __construct(string $baseUrl, int $perPage, string $offsetQueryParam)
     {
         $this->baseUrl = $baseUrl;
-        $this->perPage = $perPage;
+        $this->perPage = max(0, $perPage);
         $this->offsetQueryParam = $offsetQueryParam;
     }
 
@@ -46,7 +46,7 @@ class OffsetParameterUrlBuilder implements PageUrlBuilderInterface, PagerFactory
     private function getCurrentPageNumber(): int
     {
         $qs = query_string(uri($this->baseUrl));
-        $currentOffset = $qs->getParam($this->offsetQueryParam) ?? 0;
+        $currentOffset = (int) max(0, $qs->getParam($this->offsetQueryParam) ?? 0);
 
         return (int) floor($currentOffset / $this->perPage) + 1;
     }
@@ -87,7 +87,7 @@ class OffsetParameterUrlBuilder implements PageUrlBuilderInterface, PagerFactory
      */
     public function createPager(int $numFound = null): PagerInterface
     {
-        $pager = new Pager($this->perPage, $this->getCurrentPageNumber(), $numFound);
+        $pager = new Pager($this->perPage, $this->getCurrentPageNumber(), $numFound, $this);
         return $pager;
     }
 }
