@@ -73,7 +73,7 @@ foreach ($pager as $page) {
             'Page %s contains %d items. - Url: %s' . PHP_EOL, 
             $page, 
             count($page), 
-            $urlBuilder->buildUrl($pager, $page)
+            $pager->getUrl($page)
         );
 }
 ```
