@@ -3,6 +3,7 @@
 namespace BenTools\Pager\Tests;
 
 use BenTools\Pager\Contract\PageInterface;
+use BenTools\Pager\Model\Page;
 use BenTools\Pager\Model\Pager;
 use PHPUnit\Framework\TestCase;
 
@@ -16,15 +17,6 @@ class PagerTest extends TestCase
     public function setUp()
     {
         $this->pager = new Pager(10, 1);
-    }
-
-    /**
-     * @expectedException \BenTools\Pager\Model\Exception\PagerException
-     * @expectedExceptionMessage numFound has not been set
-     */
-    public function testItThrowsErrorWhenSomethingIsMissing()
-    {
-        $this->pager->asArray();
     }
 
     public function testPager()
@@ -152,14 +144,15 @@ class PagerTest extends TestCase
         $this->assertCount(3, $pager->getPage(6));
     }
 
-    /**
-     * @expectedException \BenTools\Pager\Model\Exception\PagerException
-     */
-    public function testThrowExceptionOnOutOfRange()
+    public function testgetPageOutOfRange()
     {
         $pager = $this->pager;
         $pager->setNumFound(10);
-        $pager->getPage(2);
+        $page = $pager->getPage(2);
+        $this->assertInstanceOf(Page::class, $page);
+        $this->assertEquals(2, $page->getPageNumber());
+        $this->assertCount(0, $page);
+        $this->assertCount(1, $pager);
     }
 
 }

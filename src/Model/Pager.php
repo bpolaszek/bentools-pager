@@ -4,7 +4,6 @@ namespace BenTools\Pager\Model;
 
 use BenTools\Pager\Contract\PageInterface;
 use BenTools\Pager\Contract\PagerInterface;
-use BenTools\Pager\Model\Exception\PagerException;
 
 final class Pager implements PagerInterface
 {
@@ -31,9 +30,9 @@ final class Pager implements PagerInterface
      */
     public function __construct(int $perPage = null, int $currentPageNumber = null, int $numFound = null)
     {
-        $this->perPage = $perPage;
-        $this->currentPageNumber = $currentPageNumber;
-        $this->numFound = $numFound;
+        $this->perPage = $perPage ?? 0;
+        $this->currentPageNumber = $currentPageNumber ?? 1;
+        $this->numFound = $numFound ?? 0;
     }
 
     /**
@@ -41,6 +40,9 @@ final class Pager implements PagerInterface
      */
     public function count(): int
     {
+        if (0 === $this->getPerPage()) {
+            return 1;
+        }
         return max(1, (int) ceil($this->getNumFound() / $this->getPerPage()));
     }
 
@@ -76,7 +78,7 @@ final class Pager implements PagerInterface
      */
     public function setCurrentPageNumber(int $currentPageNumber): PagerInterface
     {
-        $this->currentPageNumber = $currentPageNumber;
+        $this->currentPageNumber = max(0, $currentPageNumber);
         return $this;
     }
 
@@ -85,9 +87,6 @@ final class Pager implements PagerInterface
      */
     public function getCurrentPageNumber(): int
     {
-        if (null === $this->currentPageNumber) {
-            throw new PagerException(get_class($this) . '::$currentPageNumber has not been set.');
-        }
         return $this->currentPageNumber;
     }
 
@@ -96,9 +95,6 @@ final class Pager implements PagerInterface
      */
     public function getNumFound(): int
     {
-        if (null === $this->numFound) {
-            throw new PagerException(get_class($this) . '::$numFound has not been set.');
-        }
         return $this->numFound;
     }
 
@@ -108,7 +104,7 @@ final class Pager implements PagerInterface
      */
     public function setNumFound(int $numFound): PagerInterface
     {
-        $this->numFound = $numFound;
+        $this->numFound = max(0, $numFound);
         return $this;
     }
 
@@ -117,9 +113,6 @@ final class Pager implements PagerInterface
      */
     public function getPerPage(): int
     {
-        if (null === $this->perPage) {
-            throw new PagerException(get_class($this) . '::$perPage has not been set.');
-        }
         return $this->perPage;
     }
 
@@ -129,7 +122,7 @@ final class Pager implements PagerInterface
      */
     public function setPerPage(int $perPage): PagerInterface
     {
-        $this->perPage = $perPage;
+        $this->perPage = max(0, $perPage);
         return $this;
     }
 
@@ -240,12 +233,11 @@ final class Pager implements PagerInterface
      * @param int $pageNumber
      * @param int $nbPages
      * @return int
-     * @throws PagerException
      */
     private function computeNbItems(int $pageNumber, int $nbPages): int
     {
         if ($pageNumber > $nbPages) {
-            throw new PagerException(sprintf('Page number %d is invalid, the pager only contains %d pages.', $pageNumber, $nbPages));
+            return 0;
         }
 
         if ($pageNumber === $nbPages) {

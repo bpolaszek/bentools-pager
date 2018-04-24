@@ -16,13 +16,18 @@ class PageTest extends TestCase
         $this->assertEquals('3', (string) $page);
     }
 
-    /**
-     * @expectedException \BenTools\Pager\Model\Exception\PagerException
-     */
-    public function testCannotCount()
+    public function testNegativePageNumber()
     {
-        count(new Page(5));
 
+        $page = new Page(-1, 15);
+        $this->assertEquals(0, $page->getPageNumber());
+    }
+
+    public function testNegativeCount()
+    {
+
+        $page = new Page(-1, -1);
+        $this->assertCount(0, $page);
     }
 
 }
