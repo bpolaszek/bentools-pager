@@ -42,7 +42,7 @@ final class Pager implements PagerInterface
         $this->perPage = $perPage ?? 0;
         $this->currentPageNumber = $currentPageNumber ?? 1;
         $this->numFound = $numFound ?? 0;
-        $this->urlBuilder = $urlBuilder ?? new PageParameterUrlBuilder((string) current_location(), $this->perPage);
+        $this->urlBuilder = $urlBuilder;
     }
 
     /**
@@ -240,9 +240,9 @@ final class Pager implements PagerInterface
     }
 
     /**
-     * @param PageUrlBuilderInterface $urlBuilder
+     * @param PageUrlBuilderInterface|null $urlBuilder
      */
-    public function setUrlBuilder(PageUrlBuilderInterface $urlBuilder): void
+    public function setUrlBuilder(?PageUrlBuilderInterface $urlBuilder): void
     {
         $this->urlBuilder = $urlBuilder;
     }
@@ -253,6 +253,9 @@ final class Pager implements PagerInterface
      */
     public function getUrl(PageInterface $page): string
     {
+        if (null === $this->urlBuilder) {
+            $this->urlBuilder = new PageParameterUrlBuilder((string) current_location(), $this->perPage);
+        }
         return $this->urlBuilder->buildUrl($this, $page);
     }
 
